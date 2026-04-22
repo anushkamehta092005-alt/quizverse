@@ -1,0 +1,95 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: radial-gradient(circle, #0f0c29, #302b63, #24243e);
+  color: white;
+}
+
+.container {
+  text-align: center;
+  padding: 20px;
+}
+
+.title {
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+.input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 250px;
+  border-radius: 10px;
+  border: none;
+}
+
+.button {
+  padding: 10px 20px;
+  background: purple;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.question {
+  margin: 20px;
+}
+
+.option-btn {
+  display: block;
+  margin: 10px auto;
+  padding: 12px;
+  width: 60%;
+  background: #1f1b3a;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.option-btn:hover {
+  background: purple;
+}
+
+.option-label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.result-box {
+  background: #1f1b3a;
+  margin: 10px auto;
+  padding: 10px;
+  width: 70%;
+  border-radius: 10px;
+}
+
+/* 🏆 Leaderboard */
+.leaderboard-item {
+  background: #1f1b3a;
+  margin: 10px auto;
+  padding: 12px;
+  width: 60%;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+.medal {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+/* Top 3 styling */
+.leaderboard-item:nth-child(1) {
+  border: 2px solid gold;
+}
+
+.leaderboard-item:nth-child(2) {
+  border: 2px solid silver;
+}
+
+.leaderboard-item:nth-child(3) {
+  border: 2px solid #cd7f32;
+}
