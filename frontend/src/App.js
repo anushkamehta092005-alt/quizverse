@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-const BASE_URL = "https://quizverse-backend-rt10.onrender.com";
+const BASE_URL = "https://quizverse-final.onrender.com";
 
 function App() {
   const [screen, setScreen] = useState("start");
@@ -16,7 +16,6 @@ function App() {
   const [userAnswers, setUserAnswers] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
 
-  // 🚀 FETCH QUESTIONS
   const fetchQuestions = async () => {
     try {
       setLoading(true);
@@ -47,7 +46,6 @@ function App() {
     }
   };
 
-  // 🧠 PARSE QUESTIONS
   const parseQuestions = (text) => {
     const blocks = text.split("Question:");
     const result = [];
@@ -72,7 +70,6 @@ function App() {
     return result.slice(0, 5);
   };
 
-  // ⏱ TIMER
   useEffect(() => {
     if (screen !== "quiz") return;
 
@@ -88,7 +85,6 @@ function App() {
     return () => clearTimeout(timer);
   }, [time, screen]);
 
-  // 🎯 HANDLE ANSWER
   const handleAnswer = (option) => {
     setUserAnswers((prev) => [...prev, option]);
 
@@ -108,7 +104,6 @@ function App() {
     }
   };
 
-  // 💾 SAVE SCORE
   const saveScore = async () => {
     try {
       await fetch(`${BASE_URL}/save-score`, {
@@ -123,7 +118,6 @@ function App() {
     }
   };
 
-  // 🏆 GET LEADERBOARD
   const fetchLeaderboard = async () => {
     try {
       const res = await fetch(`${BASE_URL}/leaderboard`);
@@ -137,7 +131,6 @@ function App() {
   return (
     <div className="container">
 
-      {/* START SCREEN */}
       {screen === "start" && (
         <>
           <h1 className="title">QUIZVERSE 🚀</h1>
@@ -171,7 +164,6 @@ function App() {
         </>
       )}
 
-      {/* QUIZ SCREEN */}
       {screen === "quiz" && (
         <>
           <h3>⏱️ Time Left: {time}s</h3>
@@ -198,7 +190,6 @@ function App() {
         </>
       )}
 
-      {/* RESULT SCREEN */}
       {screen === "result" && (
         <>
           <h1>🎉 Quiz Completed!</h1>
