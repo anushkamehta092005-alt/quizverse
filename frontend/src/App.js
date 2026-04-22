@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
+const BASE_URL = "https://quizverse-backend-rt10.onrender.com";
+
 function App() {
   const [screen, setScreen] = useState("start");
   const [questions, setQuestions] = useState([]);
@@ -14,25 +16,17 @@ function App() {
   const [userAnswers, setUserAnswers] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
 
-  // 🔥 FETCH QUESTIONS
+  // 🚀 FETCH QUESTIONS
   const fetchQuestions = async () => {
-    if (!name || !topic) {
-      alert("Fill all fields 😅");
-      return;
-    }
-
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/generate", {
+      const res = await fetch(`${BASE_URL}/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          topic,
-          difficulty,
-        }),
+        body: JSON.stringify({ topic, difficulty }),
       });
 
       const data = await res.json();
@@ -43,17 +37,17 @@ function App() {
       setQuestions(parsed);
       setCurrentQ(0);
       setScore(0);
-      setUserAnswers([]);
       setTime(60);
+      setUserAnswers([]);
       setScreen("quiz");
       setLoading(false);
     } catch (err) {
-      alert("Error 😥");
+      alert("Error loading quiz 😥");
       setLoading(false);
     }
   };
 
-  // 🔥 PARSER
+  // 🧠 PARSE QUESTIONS
   const parseQuestions = (text) => {
     const blocks = text.split("Question:");
     const result = [];
@@ -78,7 +72,7 @@ function App() {
     return result.slice(0, 5);
   };
 
-  // 🔥 TIMER
+  // ⏱ TIMER
   useEffect(() => {
     if (screen !== "quiz") return;
 
@@ -92,9 +86,9 @@ function App() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [time, screen]); // eslint-disable-line
+  }, [time, screen]);
 
-  // 🔥 HANDLE ANSWER
+  // 🎯 HANDLE ANSWER
   const handleAnswer = (option) => {
     setUserAnswers((prev) => [...prev, option]);
 
@@ -108,40 +102,42 @@ function App() {
       setCurrentQ(next);
       setTime(60);
     } else {
+      saveScore();
+      fetchLeaderboard();
       setScreen("result");
     }
   };
 
-  // 🔥 SAVE SCORE
+  // 💾 SAVE SCORE
   const saveScore = async () => {
-    await fetch("http://localhost:5000/save-score", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, score, topic }),
-    });
-  };
-
-  // 🔥 FETCH LEADERBOARD
-  const fetchLeaderboard = async () => {
-    const res = await fetch("https://quizverse-9idb.onrender.com");
-    const data = await res.json();
-    setLeaderboard(data);
-  };
-
-  // 🔥 RUN AFTER QUIZ
-  useEffect(() => {
-    if (screen === "result") {
-      saveScore();
-      fetchLeaderboard();
+    try {
+      await fetch(`${BASE_URL}/save-score`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, score, topic }),
+      });
+    } catch (err) {
+      console.log(err);
     }
-  }, [screen]); // eslint-disable-line
+  };
+
+  // 🏆 GET LEADERBOARD
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/leaderboard`);
+      const data = await res.json();
+      setLeaderboard(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="container">
 
-      {/* START */}
+      {/* START SCREEN */}
       {screen === "start" && (
         <>
           <h1 className="title">QUIZVERSE 🚀</h1>
@@ -154,7 +150,7 @@ function App() {
 
           <input
             className="input"
-            placeholder="Enter topic (sports, history...)"
+            placeholder="Enter topic"
             onChange={(e) => setTopic(e.target.value)}
           />
 
@@ -171,18 +167,16 @@ function App() {
             Start Quiz 🧠
           </button>
 
-          {loading && <p>Loading questions...</p>}
+          {loading && <p>Loading...</p>}
         </>
       )}
 
-      {/* QUIZ */}
+      {/* QUIZ SCREEN */}
       {screen === "quiz" && (
         <>
           <h3>⏱️ Time Left: {time}s</h3>
 
-          <h2 className="question">
-            {questions[currentQ]?.question}
-          </h2>
+          <h2 className="question">{questions[currentQ]?.question}</h2>
 
           {questions[currentQ]?.options.map((opt, i) => {
             const labels = ["A", "B", "C", "D"];
@@ -204,7 +198,7 @@ function App() {
         </>
       )}
 
-      {/* RESULT */}
+      {/* RESULT SCREEN */}
       {screen === "result" && (
         <>
           <h1>🎉 Quiz Completed!</h1>
@@ -217,9 +211,9 @@ function App() {
               <div key={i} className="result-box">
                 <p><b>Q{i + 1}:</b> {q.question}</p>
                 <p>
-                  Your Answer:{" "}
+                  Your Answer:
                   <span style={{ color: isCorrect ? "lightgreen" : "red" }}>
-                    {userAnswers[i] || "Not answered"}
+                    {" "}{userAnswers[i] || "Not answered"}
                   </span>
                 </p>
                 {!isCorrect && (
